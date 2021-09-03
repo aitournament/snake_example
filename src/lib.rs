@@ -1,5 +1,13 @@
 #![no_std]
 #![no_main]
+
+/*
+To compile:
+cargo build --target=wasm32-unknown-unknown --release
+
+wasm file will be built in ./target/wasm32-unknown-unknown/release/
+ */
+
 extern crate snake_vm_sdk as sdk;
 
 use core::panic::PanicInfo;
@@ -13,12 +21,22 @@ fn panic(_info: &PanicInfo) -> ! {
 
 #[no_mangle]
 extern fn main() {
+    let width = sdk::get_arena_width();
+    let height = sdk::get_arena_height();
     loop {
         let dir = rand_dir();
         if is_dir_safe(dir) {
             sdk::set_direction(dir);
             sdk::move_snake();
-            sdk::sleep_remaining_tick();
+            if sdk::get_length() >= 18 {
+                sdk::split();
+            }
+            let current_tick = sdk::get_current_tick();
+            while sdk::get_current_tick() == current_tick {
+                let x = sdk::rand(0, width-1);
+                let y = sdk::rand(0, height-1);
+                sdk::observe(x, y);
+            }
         }
     }
 }
