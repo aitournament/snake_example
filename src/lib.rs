@@ -19,17 +19,11 @@ fn panic(_info: &PanicInfo) -> ! {
     loop {}
 }
 
-fn recurse(x: u32) -> u32 {
-    recurse(x) + recurse(x + 1)
-}
-
 #[no_mangle]
 extern "C" fn main() {
     let width = sdk::get_arena_width();
     let height = sdk::get_arena_height();
     let mut target_pos = None;
-
-    recurse(0);
 
     loop {
         // check 20 random squares for food
