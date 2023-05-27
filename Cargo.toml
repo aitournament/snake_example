@@ -1,5 +1,5 @@
 [package]
-name = "snake_vm_example"
+name = "snake_example"
 version = "0.1.0"
 authors = ["Nathan Fox <fuchsnj@gmail.com>"]
 edition = "2018"
@@ -8,7 +8,7 @@ edition = "2018"
 crate-type = ["cdylib"]
 
 [dependencies]
-snake_vm_sdk = {path = "../snake_vm_sdk"}
+snake_sdk = {git = "https://github.com/aitournament/snake_sdk"}
 
 [profile.dev]
 panic = "abort"

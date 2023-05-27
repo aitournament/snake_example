@@ -8,11 +8,9 @@ cargo build --target=wasm32-unknown-unknown --release
 wasm file will be built in ./target/wasm32-unknown-unknown/release/
  */
 
-extern crate snake_vm_sdk as sdk;
-
 use core::cmp::Ordering;
 use core::panic::PanicInfo;
-use sdk::{Direction, Observation};
+use snake_sdk::{Direction, Observation};
 
 #[panic_handler]
 fn panic(_info: &PanicInfo) -> ! {
@@ -21,17 +19,17 @@ fn panic(_info: &PanicInfo) -> ! {
 
 #[no_mangle]
 extern "C" fn main() {
-    let width = sdk::get_arena_width();
-    let height = sdk::get_arena_height();
+    let width = snake_sdk::get_arena_width();
+    let height = snake_sdk::get_arena_height();
     let mut target_pos = None;
 
     loop {
         // check 20 random squares for food
         if target_pos.is_none() {
             for _ in 0..20 {
-                let x = sdk::rand(0, width - 1);
-                let y = sdk::rand(0, height - 1);
-                if let Observation::Food(food_info) = sdk::observe(x, y) {
+                let x = snake_sdk::rand(0, width - 1);
+                let y = snake_sdk::rand(0, height - 1);
+                if let Observation::Food(food_info) = snake_sdk::observe(x, y) {
                     if food_info.health_value >= 0 {
                         target_pos = Some((x, y));
                         break;
@@ -45,7 +43,7 @@ extern "C" fn main() {
             target_pos = None;
         } else {
             random_single_move();
-            sdk::sleep_remaining_tick();
+            snake_sdk::sleep_remaining_tick();
         }
     }
 }
@@ -53,18 +51,18 @@ extern "C" fn main() {
 fn go_to(target: (u32, u32)) {
     while let Some(direction) = direction_towards(target) {
         if is_dir_safe(direction) {
-            sdk::set_direction(direction);
-            sdk::move_snake();
-            sdk::sleep_remaining_tick();
+            snake_sdk::set_direction(direction);
+            snake_sdk::move_snake();
+            snake_sdk::sleep_remaining_tick();
         } else {
             random_single_move();
-            sdk::sleep_remaining_tick();
+            snake_sdk::sleep_remaining_tick();
         }
     }
 }
 
 fn direction_towards(target: (u32, u32)) -> Option<Direction> {
-    let current_pos = sdk::get_current_pos();
+    let current_pos = snake_sdk::get_current_pos();
     match target.1.cmp(&current_pos.1) {
         Ordering::Less => return Some(Direction::North),
         Ordering::Equal => {}
@@ -81,15 +79,15 @@ fn random_single_move() {
     loop {
         let dir = rand_dir();
         if is_dir_safe(dir) {
-            sdk::set_direction(dir);
-            sdk::move_snake();
+            snake_sdk::set_direction(dir);
+            snake_sdk::move_snake();
             return;
         }
     }
 }
 
 fn rand_dir() -> Direction {
-    match sdk::rand(0, 3) {
+    match snake_sdk::rand(0, 3) {
         0 => Direction::North,
         1 => Direction::East,
         2 => Direction::South,
@@ -99,8 +97,8 @@ fn rand_dir() -> Direction {
 }
 
 fn is_dir_safe(dir: Direction) -> bool {
-    let (x, y) = sdk::get_current_pos();
-    let (width, height) = sdk::get_arena_size();
+    let (x, y) = snake_sdk::get_current_pos();
+    let (width, height) = snake_sdk::get_arena_size();
     let (target_x, target_y) = match dir {
         Direction::North => {
             if y == 0 {
@@ -127,7 +125,7 @@ fn is_dir_safe(dir: Direction) -> bool {
             (x - 1, y)
         }
     };
-    match sdk::observe(target_x, target_y) {
+    match snake_sdk::observe(target_x, target_y) {
         Observation::Empty => true,
         Observation::Food(food_info) => food_info.health_value >= 0,
         _ => false,
