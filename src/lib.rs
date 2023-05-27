@@ -1,21 +1,5 @@
-#![no_main]
-#![no_std]
-
-/*
-To compile:
-cargo build --target=wasm32-unknown-unknown --release
-
-wasm file will be built in ./target/wasm32-unknown-unknown/release/
- */
-
 use core::cmp::Ordering;
-use core::panic::PanicInfo;
 use snake_sdk::{Direction, Observation};
-
-#[panic_handler]
-fn panic(_info: &PanicInfo) -> ! {
-    loop {}
-}
 
 #[no_mangle]
 extern "C" fn main() {
