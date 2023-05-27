@@ -1,0 +1,25 @@
+# Simple workflow for deploying static content to GitHub Pages
+name: Build / Release WASM artifact
+
+on:
+  # Runs on pushes targeting the default branch
+  push:
+    branches: ["master"]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    environment:
+      name: deployment
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Build WASM
+        run: cargo build --release --target=wasm32-unknown-unknown
+      - uses: actions/upload-artifact@v3
+        with:
+          name: wasm-file
+          path: target/wasm32-unknown-unknown/release/snake_example.wasm
