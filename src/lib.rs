@@ -1,5 +1,5 @@
 use core::cmp::Ordering;
-use snake_sdk::{Direction, Observation};
+use snake_sdk::{Direction, ObservationItem};
 
 #[no_mangle]
 extern "C" fn main() {
@@ -13,11 +13,9 @@ extern "C" fn main() {
             for _ in 0..20 {
                 let x = snake_sdk::rand(0, width - 1);
                 let y = snake_sdk::rand(0, height - 1);
-                if let Observation::Food(food_info) = snake_sdk::observe(x, y) {
-                    if food_info.health_value >= 0 {
-                        target_pos = Some((x, y));
-                        break;
-                    }
+                if let Some(ObservationItem::Food(_)) = snake_sdk::observe(x, y).item {
+                    target_pos = Some((x, y));
+                    break;
                 }
             }
         }
@@ -109,9 +107,14 @@ fn is_dir_safe(dir: Direction) -> bool {
             (x - 1, y)
         }
     };
-    match snake_sdk::observe(target_x, target_y) {
-        Observation::Empty => true,
-        Observation::Food(food_info) => food_info.health_value >= 0,
-        _ => false,
+    let observation = snake_sdk::observe(target_x, target_y);
+    if observation.poison > 0 {
+        return false;
+    }
+
+    match observation.item {
+        None => true,
+        Some(ObservationItem::Food(_)) => true,
+        Some(ObservationItem::SnakeHead(_)) | Some(ObservationItem::SnakeBody(_)) => false,
     }
 }
