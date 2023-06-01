@@ -19,6 +19,9 @@ extern "C" fn main() {
                 }
             }
         }
+        if let Some((x, y)) = target_pos {
+            snake_sdk::speak(&format!("found food at ({},{})", x, y));
+        }
 
         if let Some(food_target) = target_pos {
             go_to(food_target);
