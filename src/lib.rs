@@ -11,8 +11,8 @@ extern "C" fn main() {
         // check 20 random squares for food
         if target_pos.is_none() {
             for _ in 0..20 {
-                let x = snake_sdk::rand(0, width - 1);
-                let y = snake_sdk::rand(0, height - 1);
+                let x = snake_sdk::rand(0, width);
+                let y = snake_sdk::rand(0, height);
                 if let Some(ObservationItem::Food(_)) = snake_sdk::observe(x, y).item {
                     target_pos = Some((x, y));
                     break;
@@ -72,7 +72,7 @@ fn random_single_move() {
 }
 
 fn rand_dir() -> Direction {
-    match snake_sdk::rand(0, 3) {
+    match snake_sdk::rand(0, 4) {
         0 => Direction::North,
         1 => Direction::East,
         2 => Direction::South,
