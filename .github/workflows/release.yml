@@ -38,7 +38,7 @@ jobs:
       - name: Build WASM
         run: cargo build --release --target=wasm32-unknown-unknown
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v1
+        uses: actions/upload-pages-artifact@v3
         with:
           path: './target/wasm32-unknown-unknown/release/'
       - name: Deploy to GitHub Pages
